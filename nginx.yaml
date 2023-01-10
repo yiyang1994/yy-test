@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: xdclass-nginx
+  name: xdclass-nginx
+  namespace: dev
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: xdclass-nginx
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: xdclass-nginx
+    spec:
+      containers:
+      - name: xdclass-nginx
+        image: nginx:1.23.0
+        ports:
+        - containerPort: 80
+        resources: {}
+        volumeMounts:
+        - name: nginx-log-volume
+          mountpath: /usr/log/nginx
+
+      - name: xdclass-busybox
+        image: nginx:1.35.0
+        command: ["/bin/sh","-c","tail -f /usr/local/test/access.log"]
+        volumeMounts:
+        - name: nginx-log-volume
+          mountpath: /usr/log/nginx
+
+      volumes:
+      - name: nginx-log-volume
+        hostpath:
+          path: /usr/local/test
+          type: DirectoryOrCreate 
+   
